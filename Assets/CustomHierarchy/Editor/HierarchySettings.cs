@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace CustomHierarchy.Editor
 {
-    [CreateAssetMenu(fileName = "HierarchySettings", menuName = "HierarchySettings")]
     public class HierarchySettings : ScriptableObject
     {
         private static string FilePath => $"Assets/CustomHierarchy/{nameof(HierarchySettings)}.asset";
@@ -18,7 +17,13 @@ namespace CustomHierarchy.Editor
             if (_instance != null)
                 return _instance;
             _instance = AssetDatabase.LoadAssetAtPath<HierarchySettings>(FilePath);
-            _instance ??= CreateInstance<HierarchySettings>();
+            if (_instance == null)
+            {
+                _instance = CreateInstance<HierarchySettings>();
+                AssetDatabase.CreateAsset(_instance, FilePath);
+                EditorUtility.SetDirty(_instance);
+                AssetDatabase.SaveAssets();
+            }
             return _instance;
         }
     }
